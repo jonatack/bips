@@ -34,7 +34,8 @@ interoperability with existing signing hardware, we also define a signature mess
 resembles a Bitcoin transaction (except that it contains an invalid input, so it cannot be spent on
 any real network).
 
-The Proof of Funds variant allows demonstrating control of a set of UTXOs.
+The [[bip-0322.mediawiki#full-proof-of-funds|Proof of Funds]] variant allows demonstrating control
+of a set of UTXOs in addition to the message being signed.
 The list of UTXOs may or may not be related to the address being signed with (the
 <code>message_challenge</code>).
 But in any case, the UTXO list does not aim to prove completeness (e.g. it does NOT mean:
@@ -98,7 +99,7 @@ UTXOs.
 |}
 
 <sup>1</sup>: Possible on a technical level but should NOT be used anymore in the context of this
-BIP.<br/>
+BIP, see section [[bip-0322.mediawiki#legacy|Legacy]] below.<br/>
 <sup>2</sup>: Excluding time lock scripts.
 
 Signers must prefix the signature with the variant that was used to create the signature.
