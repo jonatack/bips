@@ -22,15 +22,15 @@
 == Abstract ==
 
 A standard for interoperable signed messages based on the Bitcoin Script format, either for proving
-fund availability, or committing to a message as the intended recipient of funds sent to the invoice
+availability of funds, or for committing to a message as the intended recipient of funds sent to the invoice
 address.
 
 == Motivation ==
 
 The current message signing standard only works for P2PKH (1...) invoice addresses. We propose to
-extend and generalize the standard by using a Bitcoin Script based approach. This ensures that any
-coins, no matter what script they are controlled by, can in-principle be signed for. For easy
-interoperability with existing signing hardware, we also define a signature message format which
+extend and generalize the standard by using an approach based on Bitcoin Script. This ensures that any
+coins, no matter what script they are controlled by, can in principle be signed for. For easy
+interoperability with existing signing hardware, we also define a signature message format that
 resembles a Bitcoin transaction (except that it contains an invalid input, so it cannot be spent on
 any real network).
 
@@ -38,15 +38,15 @@ The [[bip-0322.mediawiki#full-proof-of-funds|Proof of Funds]] variant allows dem
 of a set of UTXOs in addition to the message being signed.
 The list of UTXOs may or may not be related to the address being signed with (the
 <code>message_challenge</code>).
-But in any case, the UTXO list does not aim to prove completeness (e.g. it does NOT mean:
-"these are all UTXOs that exist for an address") nor that they are unspent (e.g. a
+In any case, however, the UTXO list does not aim to prove completeness (e.g., it does NOT mean:
+"these are all UTXOs that exist for an address"), nor that they are unspent (e.g., a
 validator must consult the blockchain to verify that).
 
-Additionally, the current message signature format uses ECDSA signatures which do not commit to the
+Additionally, the current message signature format uses ECDSA signatures that do not commit to the
 public key, meaning that they do not actually prove knowledge of any secret keys. (Indeed, valid
-signatures can be tweaked by 3rd parties to become valid signatures on certain related keys.)
+signatures can be tweaked by third parties to become valid signatures on certain related keys.)
 
-Ultimately no message signing protocol can actually prove control of funds, both because a signature
+Ultimately, no message signing protocol can actually prove control of funds, both because a signature
 is obsolete as soon as it is created, and because the possessor of a secret key may be willing to
 sign messages on others' behalf even if it would not sign actual transactions. No message signing
 protocol can fix these limitations.
@@ -58,7 +58,7 @@ using this BIP.
 == Terminology ==
 
 In the context of this BIP, whenever the word "signature" or similar is used, it refers to the
-output of the signing process described below and, depending on the script type of the
+output of the signing process described below, and, depending on the script type of the
 <code>message_challenge</code>, is either a full transaction input witness stack, a full
 transaction, or a PSBT packet that can be validated against a Bitcoin Script Interpreter. Such a
 "signature" may or may not contain an actual cryptographic (ECDSA or Schnorr) signature, depending
@@ -85,32 +85,32 @@ UTXOs.
 | Simple
 | <code>P2WPKH</code>, <code>P2WSH</code><sup>2</sup>, <code>P2TR</code><sup>2</sup> <br/>
 | <code>smp</code>
-| witness stack, consensus encoded and base64-encoded
+| witness stack, consensus-encoded and base64-encoded
 |-
 | Full
 | <code>all</code>
 | <code>ful</code>
-| full <code>to_sign</code> transaction, consensus and base64-encoded
+| full <code>to_sign</code> transaction, consensus-encoded and base64-encoded
 |-
 | Full (Proof of Funds)
 | <code>all</code>
 | <code>pof</code>
-| full finalized PSBT of the <code>to_sign</code> transaction, consensus and base64-encoded
+| full finalized PSBT of the <code>to_sign</code> transaction, consensus-encoded and base64-encoded
 |}
 
-<sup>1</sup>: Possible on a technical level but should NOT be used anymore in the context of this
-BIP, see section [[bip-0322.mediawiki#legacy|Legacy]] below.<br/>
+<sup>1</sup>: Possible on a technical level but SHOULD NOT be used anymore in the context of this
+BIP; see section [[bip-0322.mediawiki#legacy|Legacy]] below.<br/>
 <sup>2</sup>: Excluding time lock scripts.
 
-Signers must prefix the signature with the variant that was used to create the signature.
+Signers MUST prefix the signature with the variant that was used to create the signature.
 To support backward compatibility with implementations of this BIP before it was finalized, a
 verifier might assume the ''simple'' variant in the absence of a prefix.
 
 === Legacy ===
 
-New proofs should use the new format for all invoice address formats, including P2PKH.
+New proofs SHOULD use the new format for all invoice address formats, including P2PKH.
 
-The legacy format MAY be used, but must be restricted to the legacy P2PKH invoice address format.
+The legacy format MAY be used, but MUST be restricted to the legacy P2PKH invoice address format.
 
 === Simple ===
 
@@ -136,7 +136,7 @@ and then proceed as they would for a full signature.
 
 === Full ===
 
-Full signatures follow an analogous specification to the BIP-325 challenges and solutions used by
+Full signatures follow an analogous specification to the BIP325 challenges and solutions used by
 Signet.
 
 Let there be two virtual transactions <code>to_spend</code> and <code>to_sign</code>.
@@ -153,14 +153,14 @@ The <code>to_spend</code> transaction is:
     vout[0].nValue = 0
     vout[0].scriptPubKey = message_challenge
 
-where <code>message_hash</code> is a BIP340-tagged hash of the message, i.e. sha256_tag(m), where
-tag = <code>BIP0322-signed-message</code> and <code>m</code> is the message as is without length
-prefix or null terminator, and <code>message_challenge</code> is the to be proven (public) key
-script.
+where <code>message_hash</code> is a BIP340-tagged hash of the message, i.e., sha256_tag(m), where
+tag = <code>BIP322-signed-message</code> and <code>m</code> is the message as-is without length
+prefix or null terminator, and <code>message_challenge</code> is the (public) key
+script to be proven.
 
 The <code>to_sign</code> transaction is:
 
-    nVersion = 0 or (FULL format only) as appropriate (e.g. 2, for time locks)
+    nVersion = 0 or (FULL format only) as appropriate (e.g., 2 for time locks)
     nLockTime = 0 or (FULL format only) as appropriate (for time locks)
     vin[0].prevout.hash = to_spend.txid
     vin[0].prevout.n = 0
@@ -181,7 +181,7 @@ full signature as above, with the following modifications.
 <ul>
 <li>
   The <code>to_spend</code> transaction is represented as a finalized PSBT instead of a raw
-  transaction (see [[bip-0174.mediawiki#input-finalizer|BIP-0174]] for details on the finalization
+  transaction (see [[bip-0174.mediawiki#input-finalizer|BIP174]] for details on the finalization
   process).
 </li>
 <li>
@@ -207,7 +207,7 @@ Unlike an ordinary signature, validators of a proof of funds need access to the 
 learn that the claimed inputs exist on the blockchain and remain unspent.
 An offline validator therefore can only attest to the cryptographic validity of the additional
 inputs' witness stack, but not its blockchain state.
-An attested list of UTXOs can also never prove that there don't exist more UTXOs for a certain
+An attested list of UTXOs can also never prove that there do not exist more UTXOs for a certain
 address.
 
 == Detailed Specification ==
@@ -219,7 +219,7 @@ output with prevout <code>000...000:FFFFFFFF</code> does not exist.
 === Verification ===
 
 A validator is given as input an address ''A'' (which may be omitted in a proof-of-funds), signature
-''s'' and message ''m'', and outputs one of three states
+''s'' and message ''m'', and outputs one of three states:
 
 <ul>
 <li>
@@ -261,7 +261,7 @@ Validation consists of the following steps:
 ## The use of NOPs reserved for upgrades is forbidden.
 ## The use of Segwit versions greater than 1 are forbidden.
 ## If any of the above steps failed, the validator should stop and output the ''inconclusive'' state.
-# Let ''T'' by the nLockTime of <code>to_sign</code> and ''S'' be the nSequence of the first input of <code>to_sign</code>. Output the state ''valid at time T and age S''.
+# Let ''T'' be the nLockTime of <code>to_sign</code> and ''S'' be the nSequence of the first input of <code>to_sign</code>. Output the state ''valid at time T and age S''.
 
 === Signing ===
 
@@ -292,7 +292,7 @@ They then encode their signature, choosing either ''simple'', ''full'' or ''full
 <li>
   If they added no inputs to <code>to_sign</code>, left nVersion, nSequence and nLockTime at 0, and
   ''A'' is a "native" Segwit address (P2WPKH, P2WSH, P2TR), then they may base64-encode
-  <code>message_signature</code>  with <code>smp</code> as prefix.
+  <code>message_signature</code> with <code>smp</code> as prefix.
 </li>
 <li>
   If they added no inputs to <code>to_sign</code>, they may base64-encode <code>to_sign</code> with
@@ -338,7 +338,7 @@ request to the user. The new global type is defined as follows:
 
 === PSBT creator ===
 
-The '''transaction creator''' of a BIP-0322 PSBT must follow these steps:
+The '''transaction creator''' of a BIP322 PSBT must follow these steps:
 
 <ol>
 <li>
@@ -368,12 +368,12 @@ The '''transaction creator''' of a BIP-0322 PSBT must follow these steps:
   partial signature.
 </li>
 <li>
-  They set the <code>PSBT_GLOBAL_GENERIC_SIGNED_MESSAGE</code> field, using the full UTF-8 encoded
+  They set the <code>PSBT_GLOBAL_GENERIC_SIGNED_MESSAGE</code> field, using the full UTF8-encoded
   message as the <code>valuedata</code>.
   <ol>
   <li>
   There is no specified maximum length of an input's <code>valuedata</code> or a PSBT as a whole in
-  [[bip-0174.mediawiki|BIP-0174]], but different signers might impose safety limits. It is
+  [[bip-0174.mediawiki|BIP174]], but different signers might impose safety limits. It is
   recommended to use a maximum length of a few kilobytes to maximize compatibility. Very large
   messages should be committed to by hash instead.
   </li>
@@ -383,14 +383,14 @@ The '''transaction creator''' of a BIP-0322 PSBT must follow these steps:
 
 === PSBT signer ===
 
-A '''transaction signer''' of a BIP-0322 PSBT must follow these steps:
+A '''transaction signer''' of a BIP322 PSBT must follow these steps:
 
 <ol>
 <li>
   They decode the base64-encoded PSBT as specified in [[bip-0174.mediawiki|BIP-0174]].
 </li>
 <li>
-  If they detect the following properties (all must be true, otherwise this is NOT a BIP-0322 PSBT
+  If they detect the following properties (all must be true, otherwise this is NOT a BIP322 PSBT
   and they should treat it as an ordinary PSBT):
   <ol>
   <li>
@@ -400,7 +400,7 @@ A '''transaction signer''' of a BIP-0322 PSBT must follow these steps:
   <li>
   The first PSBT input has either a <code>witness_utxo</code> or a <code>non_witness_utxo</code>
   field set and the <code>scriptPubKey</code> can be extracted, then use as
-  <code>message_challenge</code> in the next steps.
+  <code>message_challenge</code> in the next steps. (Note: as there is a "then" in this sentence (unlike the other ssteps in this list), it seems like there should be an "if" in it, too)
   </li>
   <li>
   The first PSBT input has <code>prevout.n = 0</code>.
@@ -421,7 +421,7 @@ A '''transaction signer''' of a BIP-0322 PSBT must follow these steps:
   signing and the address they are signing for.
   <ol>
   <li>
-  Even though the message being signed is a transaction, the user interaction (e.g. the steps and
+  Even though the message being signed is a transaction, the user interaction (e.g., the steps and
   messages shown on a hardware signing device's screen) should resemble the steps to sign a legacy
   message, not the steps for signing a transaction.
   </li>
@@ -438,25 +438,25 @@ A '''transaction signer''' of a BIP-0322 PSBT must follow these steps:
 
 === PSBT finalizer ===
 
-A '''transaction finalizer''' of a BIP-0322 PSBT must follow these steps:
+A '''transaction finalizer''' of a BIP322 PSBT must follow these steps:
 
 <ol>
 <li>
-  They decode the base64-encoded PSBT as specified in [[bip-0174.mediawiki|BIP-0174]].
+  They decode the base64-encoded PSBT as specified in [[bip-0174.mediawiki|BIP174]].
 </li>
 <li>
-  They finalize the PSBT as specified in [[bip-0174.mediawiki#input-finalizer|BIP-0174]].
+  They finalize the PSBT as specified in [[bip-0174.mediawiki#input-finalizer|BIP174]].
 </li>
 <li>
   They then encode the signature following the same steps as described in
- [[bip-0322.mediawiki#signing|Signing]] above.
+ [[bip-0322.mediawiki#signing|Signing]] above. (<-- can use an anchor link here)
 </li>
 </ol>
 
 == Compatibility ==
 
-This specification is backwards compatible with the legacy signmessage/verifymessage specification
-through the special case as described above.
+This specification is backwards-compatible with the legacy signmessage/verifymessage specification
+through the special case as described above (a link for "above" could be helpful here).
 To support backward compatibility with implementations of this BIP before it was finalized, a
 verifier might assume the ''simple' variant in the absence of a prefix.
 
@@ -509,3 +509,7 @@ Generated test vectors for more "simple" and "full" variant test cases can be fo
 [[bip-0322/generated-test-vectors.json|<code>generated-test-vectors.json</code>]].
 
 They were generated using [https://github.com/btcsuite/btcd/pull/2521 this code].
+
+(It might be helpful here to write how to run the tests.)
+
+(In general, not sure if it's necessary to use must/MUST and should/SHOULD consistently, etc., feel free to ignore those.)
