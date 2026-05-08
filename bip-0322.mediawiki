@@ -3,7 +3,7 @@
   Layer: Applications
   Title: Generic Signed Message Format
   Authors: Karl-Johan Alm <karljohan-alm@garage.co.jp>
-  Deputies: guggero <gugger@gmail.com>
+           guggero <gugger@gmail.com>
   Status: Complete
   Type: Specification
   Assigned: 2018-09-10
@@ -16,6 +16,7 @@
               2025-05-10: https://bitcoin.stackexchange.com/questions/126277/where-can-i-use-bip322-to-sign-a-message-to-verify-a-multisig-address
               2026-04-20: https://groups.google.com/g/bitcoindev/c/qd6BNz9gxCk/m/k1fHq4RKAQAJ
   Version: 1.0.0
+  Requires: 174, 340
 </pre>
 
 == Abstract ==

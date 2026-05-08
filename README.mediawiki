@@ -1076,7 +1076,7 @@ users (see also: [https://en.bitcoin.it/wiki/Economic_majority economic majority
 | [[bip-0322.mediawiki|322]]
 | Applications
 | Generic Signed Message Format
-| Karl-Johan Alm
+| Karl-Johan Alm, guggero
 | Specification
 | Complete
 |- style="background-color: #cfffcf"
